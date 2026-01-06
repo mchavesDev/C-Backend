@@ -6,6 +6,7 @@
 #include <arpa/inet.h>
 #include <thread>
 #include <vector>
+#include <string>
 
 constexpr int MAX_EVENTS = 10;
 constexpr int MAX_CLIENTS = 10;
@@ -20,13 +21,14 @@ void handleClient(int clientFd) {
     while (true) {
         int bytesRead = read(clientFd, buffer, sizeof(buffer));
         if (bytesRead <= 0) {
+            std::cout << buffer << std::endl;
             break;
         }
         write(clientFd, buffer, bytesRead);
-   
+        
         
     }
-    std::cout << "Message from client: " << buffer << std::endl;
+    
     close(clientFd);
 }
 
