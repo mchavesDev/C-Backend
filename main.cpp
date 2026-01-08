@@ -26,7 +26,7 @@ void handleClient(int clientFd)
         if (bytesRead <= 0)
         {
             std::cout << buffer << std::endl;
-            httpRequest request(buffer);
+            // httpRequest request(buffer);
             break;
         }
         response << "HTTP/1.1 200 OK\r\n";
@@ -122,16 +122,19 @@ int main()
                     continue;
                 }
                 // Create a new thread to handle the client connection
-                std::thread clientThread(handleClient, clientFd);
-                clientThread.detach();
+                // std::thread clientThread(handleClient, clientFd);
+                // clientThread.detach();
+                handleClient(clientFd);
             }
-            // else
-            // {
-            //     // Handle client data
-            //     int clientFd = events[i].data.fd;
-            //     std::thread clientThread(handleClient, clientFd);
-            //     clientThread.detach();
-            // }
+            else
+            {
+                // Handle client data
+                int clientFd = events[i].data.fd;
+                // std::thread clientThread(handleClient, clientFd);
+                // clientThread.detach();
+                handleClient(clientFd);
+
+            }
         }
     }
     close(serverFd);
