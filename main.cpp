@@ -14,27 +14,31 @@ constexpr int MAX_CLIENTS = 1024;
 constexpr int PORT = 8080;
 using namespace std;
 
-// Function to handle client connections in a separate thread
+// Function to handle client connections
 void handleClient(int clientFd)
 {
     char buffer[1024] = "";
-    std::stringstream response;
-
+    std::stringstream response; //temp
+    std::unique_ptr<httpRequest> request;
+    response << "HTTP/1.1 200 OK\r\n";//temp
+    response << "Content-Length: 39\r\n"; // Length of the HTML content//temp
+    response << "Content-Type: text/html\r\n";//temp
+    response << "\r\n";//temp
     while (true)
     {
+
         int bytesRead = read(clientFd, buffer, sizeof(buffer));
-        if (bytesRead <= 0)
+        if (bytesRead >= 0)
         {
+            request = std::make_unique<httpRequest>(buffer);
             std::cout << buffer << std::endl;
-            // httpRequest request(buffer);
+        
+            response << "<html><body><h1>"<< request->Request[1] <<"</h1></body></html>";//temp
+            write(clientFd, response.str().c_str(), response.str().length());
             break;
         }
-        response << "HTTP/1.1 200 OK\r\n";
-        response << "Content-Length: 46\r\n"; // Length of the HTML content
-        response << "Content-Type: text/html\r\n";
-        response << "\r\n";
-        response << "<html><body><h1>Hello, World!</h1></body></html>";
-        write(clientFd, response.str().c_str(), response.str().length());
+            
+       
     }
     close(clientFd);
 }

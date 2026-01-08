@@ -11,27 +11,22 @@ public:
     std::string Request[3];
     std::string Host;
     std::string Headers;
-    httpRequest(){}
 
-    std::string transformBuffer (char *buffer)
+    httpRequest(char buffer[])
     {
         
         int i = 0;
         // int fullRequestIndex = 0;
         std::stringstream splicedRequest;
 
-        if(sizeof(&buffer)>0){
-            while (i <= 1024 && buffer[i] !='\r')
-            {
-                splicedRequest << buffer[i];
-
-                i++;
-            }
+        
+        while (buffer[i] !='\r')
+        {
+            splicedRequest << buffer[i];
+            i++;
         }
         this->setRequest(splicedRequest.str());
-        
     }
-
     void setRequest(std::string request)
     {
         std::stringstream splitRequest(request);
