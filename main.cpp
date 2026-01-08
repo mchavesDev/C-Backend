@@ -7,10 +7,10 @@
 #include <thread>
 #include <vector>
 #include <sstream>
-#include "src/http.cpp"
+#include "src/httpRequest.cpp"
 
-constexpr int MAX_EVENTS = 10;
-constexpr int MAX_CLIENTS = 10;
+constexpr int MAX_EVENTS = 1024;
+constexpr int MAX_CLIENTS = 1024;
 constexpr int PORT = 8080;
 using namespace std;
 
@@ -26,9 +26,7 @@ void handleClient(int clientFd)
         if (bytesRead <= 0)
         {
             std::cout << buffer << std::endl;
-            httpRequest request;
-            request.setRequest("GET / HTTP/1.1\r\n");
-
+            httpRequest request(buffer);
             break;
         }
         response << "HTTP/1.1 200 OK\r\n";
@@ -127,13 +125,13 @@ int main()
                 std::thread clientThread(handleClient, clientFd);
                 clientThread.detach();
             }
-            else
-            {
-                // Handle client data
-                int clientFd = events[i].data.fd;
-                std::thread clientThread(handleClient, clientFd);
-                clientThread.detach();
-            }
+            // else
+            // {
+            //     // Handle client data
+            //     int clientFd = events[i].data.fd;
+            //     std::thread clientThread(handleClient, clientFd);
+            //     clientThread.detach();
+            // }
         }
     }
     close(serverFd);
