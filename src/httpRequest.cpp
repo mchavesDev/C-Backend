@@ -1,31 +1,49 @@
 #include <iostream>
 #include <unistd.h>
 #include <vector>
+#include <map>
 #include <sstream>
 #include <string.h>
 
 
 class httpRequest
 {
+    
 public:
     std::string Request[3];
     std::string Host;
-    std::string Headers;
+    std::map<std::string, std::string> Headers;
 
-    httpRequest(char buffer[])
+    httpRequest(char buffer[],int totalBytes)
     {
-        
         int i = 0;
+        int z = 0;
+        int phase = 0;
         // int fullRequestIndex = 0;
         std::stringstream splicedRequest;
-
         
-        while (buffer[i] !='\r')
+        while (z <= totalBytes - 2)
         {
-            splicedRequest << buffer[i];
-            i++;
+            i=z;
+            while (buffer[i] !='\r')
+            {
+                splicedRequest << buffer[i];
+                i++;
+            }
+            if (z==0)
+            {
+                this->setRequest(splicedRequest.str());
+                phase = 1;
+                splicedRequest.str(std::string());
+            }
+            else if(phase == 1 && z > 0)
+            {
+                this->setHost(splicedRequest.str());
+                splicedRequest.str(std::string());
+                phase = 2;
+            }
+            z=i+2;
         }
-        this->setRequest(splicedRequest.str());
     }
     void setRequest(std::string request)
     {
@@ -43,9 +61,9 @@ public:
     {
         this->Host = host;
     }
-    void setHeaders(std::string headers)
-    {
-        this->Headers = headers;
-    }
+    // void setHeaders(std::string headers)
+    // {
+    //     this->Headers = headers;
+    // }
     
 };

@@ -30,7 +30,7 @@ void handleClient(int clientFd)
         int bytesRead = read(clientFd, buffer, sizeof(buffer));
         if (bytesRead >= 0)
         {
-            request = std::make_unique<httpRequest>(buffer);
+            request = std::make_unique<httpRequest>(buffer,bytesRead);
             std::cout << buffer << std::endl;
         
             response << "<html><body><h1>"<< request->Request[1] <<"</h1></body></html>";//temp
