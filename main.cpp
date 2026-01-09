@@ -3,9 +3,7 @@
 #include <sys/epoll.h>
 #include <sys/socket.h> // Needed for socket creating and binding
 #include <netinet/in.h> // Needed to use struct sockaddr_in
-#include <arpa/inet.h>
 #include <thread>
-#include <vector>
 #include <sstream>
 #include "src/httpRequest.cpp"
 
@@ -27,7 +25,7 @@ void handleClient(int clientFd)
     while (true)
     {
 
-        int bytesRead = read(clientFd, buffer, sizeof(buffer));
+        ssize_t bytesRead = read(clientFd, buffer, sizeof(buffer));
         if (bytesRead >= 0)
         {
             request = std::make_unique<httpRequest>(buffer,bytesRead);
@@ -45,10 +43,9 @@ void handleClient(int clientFd)
 
 int main()
 {
-    int serverFd, epollFd;
     struct epoll_event event, events[MAX_EVENTS];
     struct sockaddr_in serverAddress;
-    serverFd = socket(AF_INET, SOCK_STREAM, 0);
+    int serverFd = socket(AF_INET, SOCK_STREAM, 0);
     if (serverFd == -1)
     {
         std::cerr << "Failed to create socket" << std::endl;
@@ -59,7 +56,7 @@ int main()
     serverAddress.sin_port = htons(PORT);
     serverAddress.sin_addr.s_addr = INADDR_ANY;
 
-    if (bind(serverFd, (struct sockaddr *)&serverAddress, sizeof(serverAddress)))
+    if (bind(serverFd, reinterpret_cast<struct sockaddr *>(&serverAddress), sizeof(serverAddress)))
     {
         std::cerr << "Failed to bind socket" << std::endl;
         close(serverFd);
@@ -74,7 +71,7 @@ int main()
 
     // Create epoll instance
 
-    epollFd = epoll_create1(0);
+    int epollFd = epoll_create1(0);
     if (epollFd == -1)
     {
         std::cerr << "Failed to create epoll instance" << std::endl;
@@ -109,8 +106,8 @@ int main()
             {
                 // accept new client
                 struct sockaddr_in clientAddress;
-                socklen_t clientAddrressLength = sizeof(clientAddress);
-                int clientFd = accept(serverFd, (struct sockaddr *)&clientAddress, &clientAddrressLength);
+                socklen_t clientAddressLength = sizeof(clientAddress);
+                int clientFd = accept(serverFd, reinterpret_cast<struct sockaddr *>(&clientAddress), &clientAddressLength);
                 if (clientFd == -1)
                 {
                     std::cerr << "Failed to accept client connection" << std::endl;

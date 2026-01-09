@@ -1,9 +1,8 @@
 #include <iostream>
-#include <unistd.h>
-#include <vector>
+
 #include <map>
 #include <sstream>
-#include <string.h>
+
 
 
 class httpRequest
@@ -14,7 +13,7 @@ public:
     std::string Host;
     std::map<std::string, std::string> Headers;
 
-    httpRequest(char buffer[],int totalBytes)
+    httpRequest(char buffer[], const ssize_t totalBytes)
     {
         int i = 0;
         int z = 0;
@@ -22,7 +21,7 @@ public:
         // int fullRequestIndex = 0;
         std::stringstream splicedRequest;
         
-        while (z <= totalBytes - 2)
+        while (z < totalBytes - 2)
         {
             i=z;
             while (buffer[i] !='\r')
@@ -34,18 +33,24 @@ public:
             {
                 this->setRequest(splicedRequest.str());
                 phase = 1;
-                splicedRequest.str(std::string());
             }
             else if(phase == 1 && z > 0)
             {
-                this->setHost(splicedRequest.str());
-                splicedRequest.str(std::string());
-                phase = 2;
+                this->setHost(splicedRequest.str().substr(6,sizeof(splicedRequest)));
+                phase = 0;
             }
+            else
+            {
+                const size_t del = splicedRequest.str().find(':');
+                std::string key = splicedRequest.str().substr(0, del);
+                std::string content = splicedRequest.str().substr(del + 2, sizeof(splicedRequest));
+                this->setHeaders(key,content);
+            }
+            splicedRequest.str(std::string());
             z=i+2;
         }
     }
-    void setRequest(std::string request)
+    void setRequest(const std::string& request)
     {
         std::stringstream splitRequest(request);
         std::string temp;
@@ -57,13 +62,13 @@ public:
             i++;
         }
     }
-    void setHost(std::string host)
+    void setHost(const std::string &host)
     {
         this->Host = host;
     }
-    // void setHeaders(std::string headers)
-    // {
-    //     this->Headers = headers;
-    // }
+    void setHeaders(const std::string& key, const std::string &value)
+    {
+        this->Headers[key] = value;
+    }
     
 };
