@@ -21,7 +21,7 @@ void handleClient(int clientFd)
     std::stringstream response; //temp
     std::unique_ptr<httpRequest> request;
     response << "HTTP/1.1 200 OK\r\n";//temp
-    response << "Content-Length: 39\r\n"; // Length of the HTML content//temp
+    response << "Content-Length: 36\r\n"; // Length of the HTML content//temp
     response << "Content-Type: text/html\r\n";//temp
     response << "\r\n";//temp
     while (true)
@@ -33,12 +33,12 @@ void handleClient(int clientFd)
             //auto start = std::chrono::high_resolution_clock::now();
             //for (int i = 0; i < 1000; i++)
             request = std::make_unique<httpRequest>(buffer,bytesRead);
-            parseRequest(request);
+            std::cout << parseRequest(request) << endl;
             //auto end = std::chrono::high_resolution_clock::now();
             //chrono::duration<double> elapsed_seconds = end - start;
 
             //std::cout << elapsed_seconds.count() << endl;
-            std::cout << buffer << std::endl;
+            //std::cout << buffer << std::endl;
 
             response << "<html><body><h1>"<< request->Request[1] <<"</h1></body></html>";//temp
             write(clientFd, response.str().c_str(), response.str().length());

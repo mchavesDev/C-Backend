@@ -11,30 +11,34 @@
 #include "../headers/httpRequest.h"
 
 
-void parseRequest(const std::unique_ptr<httpRequest> &request) {
+int parseRequest(const std::unique_ptr<httpRequest> &request) {
     const std::string resource = request->getResource();
     if (endpoints.find(resource) == endpoints.end() ) {
         //send to controller with response not found
-        std::cerr << HttpStatus::NotFound;
-    }else {
-        if (endpoints.at(resource) == 1) {
-            bool authenticated = false;
-            //check for auth in headers
-            //temp logic for authenticated requests
-            if (request->Headers.find("authorization") != request->Headers.end()) {
-                authenticated = true;
-            }
-            if (!authenticated) {
-                //send to controller with response Unauthorized
-                std::cerr << HttpStatus::Unauthorized;
-
-            }else {
-                //send to controller and apply logic
-                std::cout << HttpStatus::OK;
-            }
-        } else {
-
-        }
-
+        return HttpStatus::NotFound;
     }
+    if (endpoints.at(resource) == 1) {
+        //check for auth in headers
+        //temp logic for authenticated requests
+        //will replace with actual tokenized authorization service
+        if (request->Headers.find("authorization") != request->Headers.end()) {
+            const std::string auth = std::string(request->Headers.at("authorization"));
+
+            if (auth != "Basic Og==" && auth != "Bearer ") {
+                //auth token is correct send to controller with continue httpStatusCode
+                return HttpStatus::Continue;
+            }
+            //auth token is incorrect send to Forbidden httpStatusCode
+            return HttpStatus::Forbidden;
+        }
+        //send Unauthorized httpStatusCode
+        return HttpStatus::Unauthorized;
+    }
+    if (endpoints.at(resource) == 0) {
+        //not private endpoint, send Continue httpStatusCode
+        return HttpStatus::Continue;
+    }
+
+    //if request matches an endpoint and is badly formed send Invalid httpStatusCode asfgasasdfg
+    return HttpStatus::Invalid;
 }
