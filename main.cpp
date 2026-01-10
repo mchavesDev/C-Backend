@@ -6,6 +6,7 @@
 #include <thread>
 #include <sstream>
 #include "src/httpRequest.cpp"
+#include <chrono>
 
 constexpr int MAX_EVENTS = 1024;
 constexpr int MAX_CLIENTS = 1024;
@@ -26,16 +27,22 @@ void handleClient(int clientFd)
     {
 
         ssize_t bytesRead = read(clientFd, buffer, sizeof(buffer));
-        if (bytesRead >= 0)
+        if (bytesRead > 0)
         {
+            //auto start = std::chrono::high_resolution_clock::now();
+            //for (int i = 0; i < 1000; i++)
             request = std::make_unique<httpRequest>(buffer,bytesRead);
-            std::cout << buffer << std::endl;
-        
+            //auto end = std::chrono::high_resolution_clock::now();
+            //chrono::duration<double> elapsed_seconds = end - start;
+
+            //std::cout << elapsed_seconds.count() << endl;
+            //std::cout << buffer << std::endl;
+
             response << "<html><body><h1>"<< request->Request[1] <<"</h1></body></html>";//temp
             write(clientFd, response.str().c_str(), response.str().length());
-            break;
         }
-            
+        break;
+
        
     }
     close(clientFd);
@@ -92,49 +99,43 @@ int main()
     }
 
     std::cout << "Server started, listening on port " << PORT << std::endl;
-    while (true)
-    {
+    while (true) {
         int numEvents = epoll_wait(epollFd, events, MAX_EVENTS, -1);
-        if (numEvents == -1)
-        {
+        if (numEvents == -1) {
             std::cerr << "Failed to wait for events" << std::endl;
             break;
         }
-        for (int i = 0; i < numEvents; i++)
-        {
-            if (events[i].data.fd == serverFd)
-            {
+        for (int i = 0; i < numEvents; i++) {
+            if (events[i].data.fd == serverFd) {
                 // accept new client
                 struct sockaddr_in clientAddress;
                 socklen_t clientAddressLength = sizeof(clientAddress);
-                int clientFd = accept(serverFd, reinterpret_cast<struct sockaddr *>(&clientAddress), &clientAddressLength);
-                if (clientFd == -1)
-                {
+                int clientFd = accept(serverFd, reinterpret_cast<struct sockaddr *>(&clientAddress),
+                                      &clientAddressLength);
+                if (clientFd == -1) {
                     std::cerr << "Failed to accept client connection" << std::endl;
                     continue;
                 }
                 // add new client socket to epoll
                 event.events = EPOLLIN;
                 event.data.fd = clientFd;
-                if (epoll_ctl(epollFd, EPOLL_CTL_ADD, clientFd, &event) == -1)
-                {
+                if (epoll_ctl(epollFd, EPOLL_CTL_ADD, clientFd, &event) == -1) {
                     std::cerr << "Failed to add client socket to epoll instance" << std::endl;
                     close(clientFd);
                     continue;
                 }
                 // Create a new thread to handle the client connection
-                // std::thread clientThread(handleClient, clientFd);
-                // clientThread.detach();
-                handleClient(clientFd);
-            }
-            else
-            {
-                // Handle client data
-                int clientFd = events[i].data.fd;
-                // std::thread clientThread(handleClient, clientFd);
-                // clientThread.detach();
+                //std::thread clientThread(handleClient, clientFd);
+                //clientThread.detach();
+
                 handleClient(clientFd);
 
+            } else {
+                // Handle client data
+                int clientFd = events[i].data.fd;
+                //std::thread clientThread(handleClient, clientFd);
+                //clientThread.detach();
+                handleClient(clientFd);
             }
         }
     }
