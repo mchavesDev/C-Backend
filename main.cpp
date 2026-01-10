@@ -5,7 +5,8 @@
 #include <netinet/in.h> // Needed to use struct sockaddr_in
 #include <thread>
 #include <sstream>
-#include "src/httpRequest.cpp"
+#include "headers/httpRequest.h"
+#include "headers/router.h"
 #include <chrono>
 
 constexpr int MAX_EVENTS = 1024;
@@ -32,11 +33,12 @@ void handleClient(int clientFd)
             //auto start = std::chrono::high_resolution_clock::now();
             //for (int i = 0; i < 1000; i++)
             request = std::make_unique<httpRequest>(buffer,bytesRead);
+            parseRequest(request);
             //auto end = std::chrono::high_resolution_clock::now();
             //chrono::duration<double> elapsed_seconds = end - start;
 
             //std::cout << elapsed_seconds.count() << endl;
-            //std::cout << buffer << std::endl;
+            std::cout << buffer << std::endl;
 
             response << "<html><body><h1>"<< request->Request[1] <<"</h1></body></html>";//temp
             write(clientFd, response.str().c_str(), response.str().length());
