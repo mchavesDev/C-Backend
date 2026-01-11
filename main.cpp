@@ -9,6 +9,9 @@
 #include "headers/router.h"
 #include <chrono>
 
+#include "headers/controller.h"
+#include "headers/httpResponse.h"
+
 constexpr int MAX_EVENTS = 1024;
 constexpr int MAX_CLIENTS = 1024;
 constexpr int PORT = 8080;
@@ -18,12 +21,8 @@ using namespace std;
 void handleClient(int clientFd)
 {
     char buffer[1024] = "";
-    std::stringstream response; //temp
     std::unique_ptr<httpRequest> request;
-    response << "HTTP/1.1 200 OK\r\n";//temp
-    response << "Content-Length: 36\r\n"; // Length of the HTML content//temp
-    response << "Content-Type: text/html\r\n";//temp
-    response << "\r\n";//temp
+    std::unique_ptr<httpResponse> response;
     while (true)
     {
 
@@ -34,14 +33,15 @@ void handleClient(int clientFd)
             //for (int i = 0; i < 1000; i++)
             request = std::make_unique<httpRequest>(buffer,bytesRead);
             std::cout << parseRequest(request) << endl;
+            response = make_unique<httpResponse>(parseRequest(request),*request);
             //auto end = std::chrono::high_resolution_clock::now();
             //chrono::duration<double> elapsed_seconds = end - start;
 
             //std::cout << elapsed_seconds.count() << endl;
             //std::cout << buffer << std::endl;
-
-            response << "<html><body><h1>"<< request->Request[1] <<"</h1></body></html>";//temp
-            write(clientFd, response.str().c_str(), response.str().length());
+            const std::string stringyfiedResponse = (stringifyResponse(*response)).str();
+            write(clientFd, stringyfiedResponse.c_str(), stringyfiedResponse.length());
+            
         }
         break;
 

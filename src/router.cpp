@@ -22,7 +22,7 @@ int parseRequest(const std::unique_ptr<httpRequest> &request) {
         //temp logic for authenticated requests
         //will replace with actual tokenized authorization service
         if (request->Headers.find("authorization") != request->Headers.end()) {
-            const std::string auth = std::string(request->Headers.at("authorization"));
+            const auto auth = std::string(request->Headers.at("authorization"));
 
             if (auth != "Basic Og==" && auth != "Bearer ") {
                 //auth token is correct send to controller with continue httpStatusCode
