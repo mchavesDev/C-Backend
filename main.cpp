@@ -15,7 +15,6 @@
 constexpr int MAX_EVENTS = 1024;
 constexpr int MAX_CLIENTS = 1024;
 constexpr int PORT = 8080;
-using namespace std;
 
 // Function to handle client connections
 void handleClient(int clientFd)
@@ -32,15 +31,15 @@ void handleClient(int clientFd)
             //auto start = std::chrono::high_resolution_clock::now();
             //for (int i = 0; i < 1000; i++)
             request = std::make_unique<httpRequest>(buffer,bytesRead);
-            std::cout << parseRequest(request) << endl;
-            response = make_unique<httpResponse>(parseRequest(request),*request);
+            std::cout << parseRequest(request) << std::endl;
+            response = std::make_unique<httpResponse>(parseRequest(request),*request);
             //auto end = std::chrono::high_resolution_clock::now();
             //chrono::duration<double> elapsed_seconds = end - start;
 
             //std::cout << elapsed_seconds.count() << endl;
-            //std::cout << buffer << std::endl;
-            const std::string stringyfiedResponse = (stringifyResponse(*response)).str();
-            write(clientFd, stringyfiedResponse.c_str(), stringyfiedResponse.length());
+            std::cout << buffer << std::endl;
+            const std::string stringifyedResponse = (stringifyResponse(*response)).str();
+            write(clientFd, stringifyedResponse.c_str(), stringifyedResponse.length());
             
         }
         break;

@@ -14,11 +14,9 @@ httpResponse::httpResponse(const int statusCode,const httpRequest& request) {
     this->setStatus(statusCode);
     this->setVersion(request.getHttpVersion());
     this->setServer(serverName);
-    this->setContentType("application/json");
+    this->setContentType("text/plain; charset=utf-8");
     this->setBody(request.getResource(),statusCode);
-    if (this->getVersion() == "HTTP/1.0") {
-        this->setHeader("Content-Length", std::to_string(sizeof(this->getBody())));
-    }
+    this->setHeader("Content-Length", std::to_string(sizeof(this->getBody())));
 
 }
 
@@ -41,7 +39,10 @@ std::string httpResponse::getServer() const{
     return this->Server ;
 }
 std::string httpResponse::getHeader(const std::string& key) const{
-    return this->Headers.at(key) ;
+    if (this->Headers.find(key) != this->Headers.end()) {
+        return this->Headers.at(key);
+    }
+    return "";
 }
 void httpResponse::setStatus(const int status) {
     this->Status = status;
@@ -61,6 +62,7 @@ void httpResponse::setContentType(const std::string &content_type) {
 
 void httpResponse::setBody(std::string resource, const int statusCode) {
     if (HttpStatus::isSuccessful(statusCode)) {
+        this->Body = HttpStatus::reasonPhrase(statusCode);
 
     }else if (HttpStatus::isClientError(statusCode)) {
         this->Body = HttpStatus::reasonPhrase(statusCode);
