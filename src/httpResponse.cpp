@@ -17,7 +17,6 @@ httpResponse::httpResponse(const int statusCode,const httpRequest& request) {
     this->setContentType("text/plain; charset=utf-8");
     this->setBody(request.getResource(),statusCode);
     this->setHeader("Content-Length", std::to_string(sizeof(this->getBody())));
-
 }
 
 int httpResponse::getStatus() const {

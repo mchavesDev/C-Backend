@@ -51,6 +51,8 @@ void handleClient(int clientFd)
 
 int main()
 {
+    mysqlpp::Connection connection(false);
+
     struct epoll_event event, events[MAX_EVENTS];
     struct sockaddr_in serverAddress;
     int serverFd = socket(AF_INET, SOCK_STREAM, 0);

@@ -56,7 +56,6 @@ std::string compress_gzip(const std::string& str,int compressionlevel = Z_BEST_C
         oss << "Exception during zlib compression: (" << ret << ") " << zs.msg;
         throw(std::runtime_error(oss.str()));
     }
-
     return outstring;
 }
 
@@ -65,7 +64,7 @@ std::stringstream stringifyResponse(const httpResponse& response) {
     //response head
     responseString << response.getVersion() << " "
     << response.getStatus() <<  " "
-    << HttpStatus::reasonPhrase(response.getStatus()) << "\r\n";
+    << HttpStatus::reasonPhrase(response.getStatus()) << "\r\n";//optional
     //remaining headers
     responseString << "Server: " << response.getServer() << "\r\n";
     responseString << "Content-Type: " << response.getContentType() << "\r\n";
@@ -73,8 +72,8 @@ std::stringstream stringifyResponse(const httpResponse& response) {
     if (!response.getHeader("Content-Length").empty()) {
         responseString << "Content-Length: " << response.getHeader("Content-Length") << "\r\n";
     }
+    //response body
     responseString << "\r\n";
-
     responseString << compress_gzip(response.getBody());
     return responseString;
 }
