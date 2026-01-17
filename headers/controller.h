@@ -6,9 +6,10 @@
 #define C_BACKEND_CONTROLLER_H
 #include <zlib.h>
 #include "httpResponse.h"
-#include <mysql++/mysql++.h>
+#include <pqxx/pqxx>
 
 #include "../headers/httpStatusCodes.h"
 std::string compress_gzip(const std::string& str,int compressionlevel);
 std::stringstream stringifyResponse(const httpResponse &response);
+
 #endif //C_BACKEND_CONTROLLER_H

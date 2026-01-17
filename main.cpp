@@ -14,8 +14,12 @@
 
 constexpr int MAX_EVENTS = 1024;
 constexpr int MAX_CLIENTS = 1024;
-constexpr int PORT = 8080;
-
+constexpr int PORT = 8081;
+constexpr std::string HOST = "localhost";
+constexpr std::string PQXX_PORT = "5432";
+constexpr std::string DB_NAME = "postgres";
+constexpr std::string USER = "postgres";
+constexpr std::string PASSWORD = "postgres";
 // Function to handle client connections
 void handleClient(int clientFd)
 {
@@ -51,7 +55,18 @@ void handleClient(int clientFd)
 
 int main()
 {
-    mysqlpp::Connection connection(false);
+    try {
+        std::string url = "host=" + HOST + " port=" + PQXX_PORT + " dbname=" + DB_NAME +
+        " user=" + USER + " password=" + PASSWORD;
+        pqxx::connection cx{url};
+        pqxx::work tx{cx};
+        pqxx::result r = tx.exec("SELECT * FROM users");
+        tx.commit();
+        std::cout << r[0][1] << std::endl;
+    } catch (std::exception &e) {
+        std::cerr << e.what() << std::endl;
+        return 1;
+    }
 
     struct epoll_event event, events[MAX_EVENTS];
     struct sockaddr_in serverAddress;
