@@ -9,8 +9,9 @@
 class modelPqxx {
     public:
     std::string connUrl;
-
-
+    modelPqxx(const std::string &connUrl);
+    auto selectPqxx(const std::string &table, const std::string rows[]);
+    auto updatePqxx(const std::string& table, std::string rows[],std::string values[]);
 };
 
 

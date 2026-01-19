@@ -11,6 +11,7 @@
 
 #include "headers/controller.h"
 #include "headers/httpResponse.h"
+#include "headers/modelPqxx.h"
 
 constexpr int MAX_EVENTS = 1024;
 constexpr int MAX_CLIENTS = 1024;
@@ -60,7 +61,11 @@ int main()
         " user=" + USER + " password=" + PASSWORD;
         pqxx::connection cx{url};
         pqxx::work tx{cx};
-        pqxx::result r = tx.exec("SELECT * FROM users");
+        std::string rows[1];
+        rows[0]="*";
+        modelPqxx con =modelPqxx(url);
+        auto result = con.selectPqxx("users",rows);//Clangd: Function 'selectPqxx' with deduced return type cannot be used before it is define
+        pqxx::result r = result;
         tx.commit();
         std::cout << r[0][1] << std::endl;
     } catch (std::exception &e) {
