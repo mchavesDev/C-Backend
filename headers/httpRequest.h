@@ -10,6 +10,7 @@ class httpRequest {
     public:
     std::string Request[3];
     std::string Host;
+    std::string Body;
     std::map<std::string, std::string> Headers;
     httpRequest(const char* buffer, ssize_t totalBytes);
     void setRequest(const std::string& request);

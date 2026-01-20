@@ -10,9 +10,7 @@ modelPqxx::modelPqxx(const std::string &connUrl) {
 }
 // main queries
 void modelPqxx::selectPqxx(const std::string& table,const std::string rows[], int numRows) {
-
     std::string query = "SELECT ";
-
     int i=0;
     while (i<numRows) {
         query += rows[i];
@@ -22,7 +20,6 @@ void modelPqxx::selectPqxx(const std::string& table,const std::string rows[], in
         i++;
     }
     query += " FROM " + table + " ";
-
     this->Query = query;
 }
 void modelPqxx::updatePqxx(const std::string &table, const std::string rows[],const std::string values[],int numRows){
@@ -48,11 +45,9 @@ void modelPqxx::updatePqxx(const std::string &table, const std::string rows[],co
     this->Query = query;
 }
 // particles
-
-
 void modelPqxx::wherePqxx( const std::string rows[],const std::string values[],int numRows) {
     // values need the operator symbol in string
-    std::string query ="WHERE ";//= " WHERE " + rows[0] + values[0];
+    std::string query ="WHERE ";
     int rowsIncr = 0;
     while (rowsIncr<numRows) {
         query += rows[rowsIncr]+ " " + values[rowsIncr];

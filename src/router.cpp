@@ -21,13 +21,10 @@ int parseRequest(const std::unique_ptr<httpRequest> &request) {
         //check for auth in headers
         //temp logic for authenticated requests
         //will replace with actual tokenized authorization service
-        if (request->Headers.find("authorization") != request->Headers.end()) {
-            const auto auth = std::string(request->Headers.at("authorization"));
+        if (request->Headers.contains("authorization")) {
+            const auto auth = request->Headers.at("authorization");
 
-            if (auth != "Basic Og==" && auth != "Bearer ") {
-                //auth token is correct send to controller with continue httpStatusCode
-                return HttpStatus::OK;
-            }
+
             //auth token is incorrect send to Forbidden httpStatusCode
             return HttpStatus::Forbidden;
         }
@@ -39,6 +36,6 @@ int parseRequest(const std::unique_ptr<httpRequest> &request) {
         return HttpStatus::OK;
     }
 
-    //if request matches an endpoint and is badly formed send Invalid httpStatusCode asfgasasdfg
+    //if request matches an endpoint and is badly formed send Invalid httpStatusCode
     return HttpStatus::Invalid;
 }
