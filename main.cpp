@@ -56,22 +56,23 @@ void handleClient(int clientFd)
 
 int main()
 {
-    try {
-        std::string url = "host=" + HOST + " port=" + PQXX_PORT + " dbname=" + DB_NAME +
-        " user=" + USER + " password=" + PASSWORD;
-        pqxx::connection cx{url};
-        pqxx::work tx{cx};
-        std::string rows[1];
-        rows[0]="*";
-        modelPqxx con =modelPqxx(url);
-        auto result = con.selectPqxx("users",rows);//Clangd: Function 'selectPqxx' with deduced return type cannot be used before it is define
-        pqxx::result r = result;
-        tx.commit();
-        std::cout << r[0][1] << std::endl;
-    } catch (std::exception &e) {
-        std::cerr << e.what() << std::endl;
-        return 1;
-    }
+    // try {
+    //     std::string url = "host=" + HOST + " port=" + PQXX_PORT + " dbname=" + DB_NAME +
+    //     " user=" + USER + " password=" + PASSWORD;
+    //     std::string rows[1];
+    //     rows[0]="*";
+    //     modelPqxx queryObject = modelPqxx(url);
+    //     queryObject.selectPqxx("users",rows, std::size(rows));
+    //     std::string whereRows[1];
+    //     whereRows[0]="username";
+    //     std::string whereValues[1];
+    //     whereValues[0]="= 'mario'";
+    //     queryObject.wherePqxx(whereRows,whereValues, std::size(whereRows));
+    //     const pqxx::result r = queryObject.executePqxx();
+    // } catch (std::exception &e) {
+    //     std::cerr << e.what() << std::endl;
+    //     return 1;
+    // }
 
     struct epoll_event event, events[MAX_EVENTS];
     struct sockaddr_in serverAddress;

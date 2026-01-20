@@ -9,9 +9,14 @@
 class modelPqxx {
     public:
     std::string connUrl;
+    std::string Query;
     modelPqxx(const std::string &connUrl);
-    auto selectPqxx(const std::string &table, const std::string rows[]);
-    auto updatePqxx(const std::string& table, std::string rows[],std::string values[]);
+    // queries
+    void selectPqxx(const std::string &table, const std::string rows[], int numRows);
+    void updatePqxx(const std::string &table, const std::string rows[],const std::string values[], int numRows);
+    void wherePqxx(const std::string rows[],const std::string values[], int numRows);
+    // execute
+    pqxx::result executePqxx();
 };
 
 
