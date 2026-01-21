@@ -1,7 +1,8 @@
 #include "../headers/httpRequest.h"
 #include <iostream>
 #include <sstream>
-httpRequest::httpRequest(const char* buffer, const ssize_t totalBytes){
+using json = nlohmann::json;
+httpRequest::httpRequest(const char* buffer){
     int i = 0;
     int z = 0;
     int phase = 0;
@@ -9,7 +10,7 @@ httpRequest::httpRequest(const char* buffer, const ssize_t totalBytes){
     // int fullRequestIndex = 0;
     std::stringstream splicedRequest;
 
-    while (z < totalBytes - 2){
+    while (buffer[z]!='\r' && buffer[z+1]!='\n' && buffer[z+2]!='\r' && buffer[z+3]!='\n'){
         i=z;
         while (buffer[i] !='\r'){
             splicedRequest << buffer[i];
@@ -32,7 +33,19 @@ httpRequest::httpRequest(const char* buffer, const ssize_t totalBytes){
         splicedRequest.str(std::string());
         z=i+2;
     }
+    // convert body to json object
+    z=z+2;
+    std::stringstream temp;
+    while (buffer[z]!='\0') {
+        if (buffer[z]!='\n' && buffer[z]!='\r') {
+            temp<<buffer[z];
+        }
+        z++;
+    }
+    json jComplete = json::parse(temp);
+    this->setBody(jComplete);
 }
+
 void httpRequest::setRequest(const std::string& request){
     std::stringstream splitRequest(request);
     std::string temp;
@@ -50,6 +63,11 @@ void httpRequest::setHost(const std::string &host){
 void httpRequest::setHeaders(const std::string& key, const std::string &value){
     this->Headers[key] = value;
 }
+
+void httpRequest::setBody(const nlohmann::json &body) {
+    this->Body = body;
+}
+
 std::string httpRequest::getHeader(const std::string &key) {
     return this->Headers[key];
 }

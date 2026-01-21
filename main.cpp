@@ -35,7 +35,7 @@ void handleClient(int clientFd)
         {
             //auto start = std::chrono::high_resolution_clock::now();
             //for (int i = 0; i < 1000; i++)
-            request = std::make_unique<httpRequest>(buffer,bytesRead);
+            request = std::make_unique<httpRequest>(buffer);
             std::cout << parseRequest(request) << std::endl;
             response = std::make_unique<httpResponse>(parseRequest(request),*request);
             //auto end = std::chrono::high_resolution_clock::now();

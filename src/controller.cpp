@@ -58,7 +58,10 @@ std::string compress_gzip(const std::string& str,int compressionlevel = Z_BEST_C
     }
     return outstring;
 }
-
+/**
+ *Transform object httpResponse to string
+ *send later as a char* with the response of the server to the client
+ */
 std::stringstream stringifyResponse(const httpResponse& response) {
     std::stringstream responseString;
     //response head
