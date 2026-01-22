@@ -52,7 +52,7 @@ void modelPqxx::wherePqxx( const std::string rows[],const std::string values[],i
     while (rowsIncr<numRows) {
         query += rows[rowsIncr]+ " " + values[rowsIncr];
         if (rowsIncr<numRows-1) {
-            query += ", ";
+            query += " AND ";
         }
         rowsIncr++;
     }

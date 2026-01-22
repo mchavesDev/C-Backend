@@ -14,7 +14,7 @@ httpResponse::httpResponse(const int statusCode,const httpRequest& request) {
     this->setStatus(statusCode);
     this->setVersion(request.getHttpVersion());
     this->setServer(serverName);
-    this->setContentType("text/plain; charset=utf-8");
+    this->setContentType("application/json");
     this->setBody(request.getResource(),statusCode);
     this->setHeader("Content-Length", std::to_string(sizeof(this->getBody())));
 }

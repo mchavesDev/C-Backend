@@ -13,7 +13,7 @@ class httpRequest {
     std::string Host;
     nlohmann::json Body;
     std::map<std::string, std::string> Headers;
-    httpRequest(const char* buffer);
+    httpRequest(const char* buffer, int bufferLength);
     void setRequest(const std::string& request);
     void setHost(const std::string &host);
     void setHeaders(const std::string& key, const std::string &value);

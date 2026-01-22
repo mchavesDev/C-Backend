@@ -35,9 +35,12 @@ void handleClient(int clientFd)
         {
             //auto start = std::chrono::high_resolution_clock::now();
             //for (int i = 0; i < 1000; i++)
-            request = std::make_unique<httpRequest>(buffer);
-            std::cout << parseRequest(request) << std::endl;
+            request = std::make_unique<httpRequest>(buffer,bytesRead);
+
+            int statusCode = parseRequest(request);
+
             response = std::make_unique<httpResponse>(parseRequest(request),*request);
+
             //auto end = std::chrono::high_resolution_clock::now();
             //chrono::duration<double> elapsed_seconds = end - start;
 
@@ -56,26 +59,8 @@ void handleClient(int clientFd)
 
 int main()
 {
-    // try {
-    //     std::string url = "host=" + HOST + " port=" + PQXX_PORT + " dbname=" + DB_NAME +
-    //     " user=" + USER + " password=" + PASSWORD;
-    //     std::string rows[1];
-    //     rows[0]="*";
-    //     modelPqxx queryObject = modelPqxx(url);
-    //     queryObject.selectPqxx("users",rows, std::size(rows));
-    //     std::string whereRows[1];
-    //     whereRows[0]="username";
-    //     std::string whereValues[1];
-    //     whereValues[0]="= 'mario'";
-    //     queryObject.wherePqxx(whereRows,whereValues, std::size(whereRows));
-    //     const pqxx::result r = queryObject.executePqxx();
-    // } catch (std::exception &e) {
-    //     std::cerr << e.what() << std::endl;
-    //     return 1;
-    // }
-
-    struct epoll_event event, events[MAX_EVENTS];
-    struct sockaddr_in serverAddress;
+    epoll_event event, events[MAX_EVENTS];
+    sockaddr_in serverAddress;
     int serverFd = socket(AF_INET, SOCK_STREAM, 0);
     if (serverFd == -1)
     {

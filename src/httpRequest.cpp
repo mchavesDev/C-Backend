@@ -2,7 +2,7 @@
 #include <iostream>
 #include <sstream>
 using json = nlohmann::json;
-httpRequest::httpRequest(const char* buffer){
+httpRequest::httpRequest(const char* buffer,int bufferLength){
     int i = 0;
     int z = 0;
     int phase = 0;
@@ -10,7 +10,7 @@ httpRequest::httpRequest(const char* buffer){
     // int fullRequestIndex = 0;
     std::stringstream splicedRequest;
 
-    while (buffer[z]!='\r' && buffer[z+1]!='\n' && buffer[z+2]!='\r' && buffer[z+3]!='\n'){
+    while (buffer[z]!='\r' && buffer[z+1]!='\n' && buffer[z+2]!='\r' && buffer[z+3]!='\n' && z < bufferLength){
         i=z;
         while (buffer[i] !='\r'){
             splicedRequest << buffer[i];
@@ -33,17 +33,19 @@ httpRequest::httpRequest(const char* buffer){
         splicedRequest.str(std::string());
         z=i+2;
     }
-    // convert body to json object
-    z=z+2;
-    std::stringstream temp;
-    while (buffer[z]!='\0') {
-        if (buffer[z]!='\n' && buffer[z]!='\r') {
-            temp<<buffer[z];
+    if (this->Headers.contains("Content-type") && this->Headers["Content-type"]=="application/json") {
+        // convert body to json object
+        z=z+2;
+        std::stringstream temp;
+        while (buffer[z]!='\0') {
+            if (buffer[z]!='\n' && buffer[z]!='\r') {
+                temp<<buffer[z];
+            }
+            z++;
         }
-        z++;
+        json jComplete = json::parse(temp);
+        this->setBody(jComplete);
     }
-    json jComplete = json::parse(temp);
-    this->setBody(jComplete);
 }
 
 void httpRequest::setRequest(const std::string& request){

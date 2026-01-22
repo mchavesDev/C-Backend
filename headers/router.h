@@ -2,11 +2,12 @@
 // Created by mario on 10/1/26.
 //
 
-
 #ifndef C_BACKEND_ROUTER_H
 #define C_BACKEND_ROUTER_H
 #include <memory>
-
+#include "httpStatusCodes.h"
+#include <map>
+#include <memory>
 #include "httpRequest.h"
 const std::map<std::string,int> endpoints = {
     {"/api",0},

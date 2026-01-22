@@ -3,17 +3,14 @@
 //
 
 #include "../headers/router.h"
-#include <iostream>
-#include <map>
-#include <memory>
 
-#include "../headers/httpStatusCodes.h"
-#include "../headers/httpRequest.h"
-
-
+#include "../headers/controller.h"
+/**
+ * Check if request exists in endpoints and if request needs auth, return http status code
+ */
 int parseRequest(const std::unique_ptr<httpRequest> &request) {
     const std::string resource = request->getResource();
-    if (endpoints.find(resource) == endpoints.end() ) {
+    if (!endpoints.contains(resource) ) {
         //send to controller with response not found
         return HttpStatus::NotFound;
     }
@@ -21,12 +18,11 @@ int parseRequest(const std::unique_ptr<httpRequest> &request) {
         //check for auth in headers
         //temp logic for authenticated requests
         //will replace with actual tokenized authorization service
-        if (request->Headers.contains("authorization")) {
-            const auto auth = request->Headers.at("authorization");
-
-
+        if (!request->Body.empty() && checkIfAuth(*request)) {
+            // const auto auth = request->Headers.at("authorization");
+            // request->Body;
             //auth token is incorrect send to Forbidden httpStatusCode
-            return HttpStatus::Forbidden;
+            return HttpStatus::OK;
         }
         //send Unauthorized httpStatusCode
         return HttpStatus::Unauthorized;
