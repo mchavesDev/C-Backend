@@ -33,7 +33,7 @@ httpRequest::httpRequest(const char* buffer,int bufferLength){
         splicedRequest.str(std::string());
         z=i+2;
     }
-    if (this->Headers.contains("Content-type") && this->Headers["Content-type"]=="application/json") {
+    if (this->Headers.contains("content-type") && this->Headers["content-type"]=="application/json") {
         // convert body to json object
         z=z+2;
         std::stringstream temp;

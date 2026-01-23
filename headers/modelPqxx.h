@@ -10,6 +10,7 @@ class modelPqxx {
     public:
     std::string connUrl;
     std::string Query;
+    pqxx::params Params;
     modelPqxx(const std::string &connUrl);
     // queries
     void selectPqxx(const std::string &table, const std::string rows[], int numRows);

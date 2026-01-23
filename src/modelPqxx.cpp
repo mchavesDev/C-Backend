@@ -6,6 +6,7 @@
 
 modelPqxx::modelPqxx(const std::string &connUrl) {
     this->connUrl=connUrl;
+
     this->Query="";
 }
 // main queries
@@ -19,6 +20,7 @@ void modelPqxx::selectPqxx(const std::string& table,const std::string rows[], in
         }
         i++;
     }
+
     query += " FROM " + table + " ";
     this->Query = query;
 }
@@ -50,7 +52,9 @@ void modelPqxx::wherePqxx( const std::string rows[],const std::string values[],i
     std::string query ="WHERE ";
     int rowsIncr = 0;
     while (rowsIncr<numRows) {
-        query += rows[rowsIncr]+ " " + values[rowsIncr];
+        this->Params.append(values[rowsIncr]);
+        int paramsCount = this->Params.size();
+        query +=  rows[rowsIncr] + " " + "$"+std::to_string(paramsCount);
         if (rowsIncr<numRows-1) {
             query += " AND ";
         }
@@ -63,8 +67,10 @@ pqxx::result modelPqxx::executePqxx() {
     pqxx::connection con{this->connUrl};
     pqxx::work tx(con);
     this->Query+=";";
-    pqxx::result res = tx.exec(this->Query);
-    tx.commit();
+    const std::string_view query = this->Query;
+    const pqxx::params parms= this->Params;
+    // {"=mario","=1234"}
+    pqxx::result res = tx.exec(query,pqxx::params{"=mario","=1234"});
     return res;
 }
 

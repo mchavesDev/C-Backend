@@ -18,6 +18,7 @@ int parseRequest(const std::unique_ptr<httpRequest> &request) {
         //check for auth in headers
         //temp logic for authenticated requests
         //will replace with actual tokenized authorization service
+        const std::string username = *request->Body.find("username");
         if (!request->Body.empty() && checkIfAuth(*request)) {
             // const auto auth = request->Headers.at("authorization");
             // request->Body;
