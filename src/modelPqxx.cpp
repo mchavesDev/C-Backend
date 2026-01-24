@@ -54,7 +54,7 @@ void modelPqxx::wherePqxx( const std::string rows[],const std::string values[],i
     while (rowsIncr<numRows) {
         this->Params.append(values[rowsIncr]);
         int paramsCount = this->Params.size();
-        query +=  rows[rowsIncr] + " " + "$"+std::to_string(paramsCount);
+        query +=  rows[rowsIncr] + "= " + "$"+std::to_string(paramsCount);
         if (rowsIncr<numRows-1) {
             query += " AND ";
         }
@@ -65,12 +65,17 @@ void modelPqxx::wherePqxx( const std::string rows[],const std::string values[],i
 
 pqxx::result modelPqxx::executePqxx() {
     pqxx::connection con{this->connUrl};
-    pqxx::work tx(con);
     this->Query+=";";
-    const std::string_view query = this->Query;
+    std::string &query = this->Query;
     const pqxx::params parms= this->Params;
+    con.prepare(
+        "getUser",
+        query);
     // {"=mario","=1234"}
-    pqxx::result res = tx.exec(query,pqxx::params{"=mario","=1234"});
+    pqxx::work tx(con);
+
+    pqxx::result res = tx.exec(pqxx::prepped{"getUser"},parms);
     return res;
 }
 
+// '
