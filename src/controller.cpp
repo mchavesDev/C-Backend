@@ -95,10 +95,9 @@ bool checkForCredentials(const std::string &username, const std::string &passwor
     std::string selectRows[1] = {"id"};
     queryObject.selectPqxx("users",selectRows,std::size(selectRows));
     const std::string whereRows[2] = {"username","password"};
-    const std::string whereValues[2] = {"'"+username+"'","'"+password+"'"};
+    const std::string whereValues[2] = {username,password};
     queryObject.wherePqxx(whereRows,whereValues,std::size(whereRows));
-    const pqxx::result res = queryObject.executePqxx();
-    if (!res.empty()) {
+    if (const pqxx::result res = queryObject.executePqxx(); res.size()==1) {
         return true;
     }
     return false;
