@@ -13,9 +13,10 @@ class modelPqxx {
     pqxx::params Params;
     modelPqxx(const std::string &connUrl);
     // queries
-    void selectPqxx(const std::string &table, const std::string rows[], int numRows);
-    void updatePqxx(const std::string &table, const std::string rows[],const std::string values[], int numRows);
-    void wherePqxx(const std::string rows[],const std::string values[], int numRows);
+    void selectPqxx(const std::string &table, const std::string cols[], int numCols);
+    void insertPqxx(const std::string &table, const std::string cols[],const std::string values[],int numCols);
+    void updatePqxx(const std::string &table, const std::string cols[],const std::string values[], int numRows);
+    void wherePqxx(const std::string cols[],const std::string values[], int numCols);
     // execute
     pqxx::result executePqxx();
 };

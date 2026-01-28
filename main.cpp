@@ -16,11 +16,6 @@
 constexpr int MAX_EVENTS = 1024;
 constexpr int MAX_CLIENTS = 1024;
 constexpr int PORT = 8081;
-constexpr std::string HOST = "localhost";
-constexpr std::string PQXX_PORT = "5432";
-constexpr std::string DB_NAME = "postgres";
-constexpr std::string USER = "postgres";
-constexpr std::string PASSWORD = "postgres";
 // Function to handle client connections
 void handleClient(int clientFd)
 {

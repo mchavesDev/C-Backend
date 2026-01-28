@@ -30,6 +30,9 @@ int parseRequest(const std::unique_ptr<httpRequest> &request) {
     }
     if (endpoints.at(resource) == 0) {
         //not private endpoint, send Continue httpStatusCode
+        if (resource=="/signup") {
+            insertNewNonExistantUser(*request->Body.find)
+        }
         return HttpStatus::OK;
     }
 
