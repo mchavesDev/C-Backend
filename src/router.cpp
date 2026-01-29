@@ -19,7 +19,7 @@ int parseRequest(const std::unique_ptr<httpRequest> &request) {
         //temp logic for authenticated requests
         //will replace with actual tokenized authorization service
         const std::string username = *request->Body.find("username");
-        if (!request->Body.empty() && checkIfAuth(*request)) {
+        if (!request->Body.empty() && controller::checkIfAuth(*request)) {
             // const auto auth = request->Headers.at("authorization");
             // request->Body;
             //auth token is incorrect send to Forbidden httpStatusCode
@@ -31,7 +31,7 @@ int parseRequest(const std::unique_ptr<httpRequest> &request) {
     if (endpoints.at(resource) == 0) {
         //not private endpoint, send Continue httpStatusCode
         if (resource=="/signup") {
-            insertNewNonExistantUser(*request->Body.find)
+            controller::insertNewNonExistantUser(controller::getUserValuesFromRequest(*request));
         }
         return HttpStatus::OK;
     }

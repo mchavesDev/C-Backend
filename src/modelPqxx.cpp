@@ -51,8 +51,8 @@ void modelPqxx::updatePqxx(const std::string &table, const std::string cols[],co
  */
 void modelPqxx::insertPqxx(const std::string &table,const std::string cols[],const std::string values[],int numCols) {
     // values need the operator symbol in string
-    std::string query ="INSERT INTO "+table+" ";
-    std::string valuesApp = "VALUES ";
+    std::string query ="INSERT INTO "+table+" (";
+    std::string valuesApp = ") VALUES (";
     int colsIncr = 0;
     while (colsIncr<numCols) {
         this->Params.append(values[colsIncr]);
@@ -65,7 +65,7 @@ void modelPqxx::insertPqxx(const std::string &table,const std::string cols[],con
         }
         colsIncr++;
     }
-    this->Query += query + valuesApp;
+    this->Query += query + valuesApp + ")";
 }
 /**
  * Where particle args colums to compare and values to compare to, also number of columns
@@ -96,5 +96,6 @@ pqxx::result modelPqxx::executePqxx() {
     const pqxx::params parms= this->Params;
     pqxx::work tx(con);
     pqxx::result res = tx.exec(query,parms);
+    tx.commit();
     return res;
 }

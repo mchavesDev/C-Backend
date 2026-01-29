@@ -16,7 +16,7 @@
 
 /** Compress a STL string using zlib with given compression level and return
   * the binary data. */
-std::string compress_gzip(const std::string& str,int compressionLevel = Z_BEST_COMPRESSION)
+std::string controller::compress_gzip(const std::string& str,int compressionLevel = Z_BEST_COMPRESSION)
 {
     z_stream zs;                        // z_stream is zlib's control structure
     memset(&zs, 0, sizeof(zs));
@@ -65,7 +65,7 @@ std::string compress_gzip(const std::string& str,int compressionLevel = Z_BEST_C
  *Transform object httpResponse to string
  *send later as a char* with the response of the server to the client
  */
-std::stringstream stringifyResponse(const httpResponse& response) {
+std::stringstream controller::stringifyResponse(const httpResponse& response) {
     std::stringstream responseString;
     //response head
     responseString << response.getVersion() << " "
@@ -86,7 +86,7 @@ std::stringstream stringifyResponse(const httpResponse& response) {
 /**
  * Check if user credentials are correct
  */
-bool checkForCredentials(const std::string &username, const std::string &password) {
+bool controller::checkForCredentials(const std::string &username, const std::string &password) {
     dotenv::init("../env.env");
     const std::string url = "host=" + std::string(std::getenv("HOST")) +
         " port=" +std::string(std::getenv("PQXX_PORT"))  +
@@ -95,7 +95,7 @@ bool checkForCredentials(const std::string &username, const std::string &passwor
         " password=" +std::string(std::getenv("PASSWORD"));
 
     modelPqxx queryObject = modelPqxx(url);
-    std::string selectRows[1] = {"id"};
+    const std::string selectRows[1] = {"id"};
     queryObject.selectPqxx("users",selectRows,std::size(selectRows));
     const std::string whereRows[2] = {"username","password"};
     const std::string whereValues[2] = {username,password};
@@ -105,16 +105,15 @@ bool checkForCredentials(const std::string &username, const std::string &passwor
     }
     return false;
 }
-bool getUserByUsername(const std::string &username) {
+bool controller::getUserByUsername(const std::string &username) {
     dotenv::init("../env.env");
-    const std::string url = "host=" + std::string(std::getenv("HOST")) +
+    std::string url = "host=" + std::string(std::getenv("HOST")) +
         " port=" +std::string(std::getenv("PQXX_PORT"))  +
         " dbname=" +std::string(std::getenv("DB_NAME")) +
         " user=" +std::string(std::getenv("USER")) +
         " password=" +std::string(std::getenv("PASSWORD"));
-
     modelPqxx queryObject = modelPqxx(url);
-    std::string selectRows[1] = {"id"};
+    const std::string selectRows[1] = {"id"};
     queryObject.selectPqxx("users",selectRows,std::size(selectRows));
     const std::string whereRows[1] = {"username"};
     const std::string whereValues[1] = {username};
@@ -124,7 +123,7 @@ bool getUserByUsername(const std::string &username) {
     }
     return false;
 }
-bool insertNewNonExistantUser(const std::string &username,const std::string &password) {
+bool controller::insertNewNonExistantUser(user newUser) {
     dotenv::init("../env.env");
     const std::string url = "host=" + std::string(std::getenv("HOST")) +
         " port=" +std::string(std::getenv("PQXX_PORT"))  +
@@ -132,11 +131,11 @@ bool insertNewNonExistantUser(const std::string &username,const std::string &pas
         " user=" +std::string(std::getenv("USER")) +
         " password=" +std::string(std::getenv("PASSWORD"));
 
-    if (!getUserByUsername(username)) {
+    if (!getUserByUsername(newUser.getUsername())) {
         modelPqxx queryObject = modelPqxx(url);
         const std::string cols[2] = {"username","password"};
-        const std::string values[2] = {username,password};
-        queryObject.insertPqxx("users",cols,values,sizeof(values));
+        const std::string values[2] = {newUser.getUsername(),newUser.getPassword()};
+        queryObject.insertPqxx("users",cols,values,std::size(values));
         queryObject.executePqxx();
         return true;
     }
@@ -146,16 +145,15 @@ bool insertNewNonExistantUser(const std::string &username,const std::string &pas
  * Check for correct authentification credentials inside request body
  */
 
-bool checkIfAuth(httpRequest &request) {
+user controller::getUserValuesFromRequest(httpRequest &request) {
     const std::string username = *request.Body.find("username");
     const std::string password = *request.Body.find("password");
-    if (checkForCredentials(username,password)) {
+    return user(username,password);
+}
+
+bool controller::checkIfAuth(httpRequest &request) {
+    if (user reqUser = getUserValuesFromRequest(request); checkForCredentials(reqUser.getUsername(),reqUser.getPassword())) {
         return true;
     }
     return false;
-}
-
-bool getUserValuesFromRequest(httpRequest &request) {
-    const std::string username = *request.Body.find("username");
-    const std::string password = *request.Body.find("password");
 }

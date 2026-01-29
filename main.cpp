@@ -41,7 +41,7 @@ void handleClient(int clientFd)
 
             //std::cout << elapsed_seconds.count() << endl;
             std::cout << buffer << std::endl;
-            const std::string stringifyedResponse = (stringifyResponse(*response)).str();
+            const std::string stringifyedResponse = (controller::stringifyResponse(*response)).str();
             write(clientFd, stringifyedResponse.c_str(), stringifyedResponse.length());
             
         }
